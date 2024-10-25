@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload a File</title>
+</head>
+<body>
+    <h2>Upload a Text File</h2>
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+                <input type="file" name="file" accept=".fa,.nopunc, .txt">
+        <button type="submit">Upload</button>
+    </form>
+
+    {% if word_count %}
+        <p>Le fichier contient {{ word_count }} mots.</p>
+    {% endif %}
+</body>
+</html>
