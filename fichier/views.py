@@ -1,42 +1,42 @@
-
 from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
 from hdfs import InsecureClient
 import subprocess
+
+# Configuration HDFS
+hdfs_client = InsecureClient('http://localhost:9870/', user='kaoutarkouache')
+
 def upload_file(request):
     word_count = None
-    if request.method == 'POST' and request.FILES['file']:
-        uploaded_file = request.FILES['file']
-        fs = FileSystemStorage()
-        filename = fs.save(uploaded_file.name, uploaded_file)
-        file_path = fs.path(filename)
+    error = None
 
-        with open(file_path, 'r') as f:
-            text = f.read()
-            word_count = len(text.split())
-
-    return render(request, 'fichier/upload.html', {'word_count': word_count})
-
-
-
-hdfs_client = InsecureClient('http://localhost:9864/', user='kaoutarkouache')
-def upload_file(request):
-    word_count = None
     if request.method == 'POST':
         if 'file' in request.FILES:
             uploaded_file = request.FILES['file']
+
             fs = FileSystemStorage()
             filename = fs.save(uploaded_file.name, uploaded_file)
             file_path = fs.path(filename)
 
             try:
-                hdfs_client.upload('/input', file_path)
+                hdfs_client.status('/')
+                print("Connexion à HDFS réussie.")
+            except Exception as e:
+                print(f"Erreur de connexion à HDFS : {e}")
+                return render(request, 'fichier/upload.html', {'error': "Erreur de connexion à HDFS."})
+
+            try:
+                with open(file_path, 'rb') as file_data:
+                    hdfs_client.write(f'/input/{filename}', data=file_data, overwrite=True)
+                print(f"Fichier {filename} envoyé avec succès vers HDFS.")
             except Exception as e:
                 print(f"Erreur lors de l'envoi du fichier vers HDFS: {e}")
+                return render(request, 'fichier/upload.html', {'error': str(e)})
 
-            word_count = count_words_in_hadoop(uploaded_file.name)
+            word_count = count_words_in_hadoop(filename)
 
-    return render(request, 'fichier/upload.html', {'word_count': word_count})
+    return render(request, 'fichier/upload.html', {'word_count': word_count, 'error': error})
+
 
 def count_words_in_hadoop(filename):
     command = f"hadoop fs -cat /input/{filename} | wc -w"
