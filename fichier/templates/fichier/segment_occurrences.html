@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Occurrences des Segments</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h2 class="text-center">Occurrences des Segments</h2>
+
+    <form action="{% url 'process_character_file' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Télécharger un fichier de caractères</label>
+            <input type="file" class="form-control" name="file" accept=".fa,.nopunc,.txt" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Traiter le Fichier</button>
+    </form>
+
+    {% if segments_count %}
+        <table class="table table-bordered mt-3">
+            <thead>
+                <tr>
+                    <th>Segment</th>
+                    <th>Occurrences</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for segment, count in segments_count.items %}
+                    <tr>
+                        <td>{{ segment }}</td>
+                        <td>{{ count }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {% if error %}
+        <div class="alert alert-danger mt-3">{{ error }}</div>
+    {% endif %}
+</div>
+</body>
+</html>
