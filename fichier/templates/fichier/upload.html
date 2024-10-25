@@ -1,18 +1,55 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload a File</title>
+    <!-- Importer Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Centrer le contenu */
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .card {
+            padding: 20px;
+            max-width: 400px;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
-    <h2>Upload a Text File</h2>
-    <form action="" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-                <input type="file" name="file" accept=".fa,.nopunc, .txt">
-        <button type="submit">Upload</button>
-    </form>
 
-    {% if word_count %}
-        <p>Le fichier contient {{ word_count }} mots.</p>
-    {% endif %}
+<div class="container">
+    <div class="card text-center shadow-lg">
+        <h2 class="card-title">Télécharger un fichier texte</h2>
+        <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="file" name="file" accept=".fa,.nopunc,.txt" class="form-control-file" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Télécharger</button>
+        </form>
+
+        {% if word_count %}
+            <div class="alert alert-info mt-3">
+                Le fichier contient <strong>{{ word_count }}</strong> mots.
+            </div>
+        {% endif %}
+
+        {% if error %}
+            <div class="alert alert-danger mt-3">
+                {{ error }}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Importer Bootstrap JS et jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
